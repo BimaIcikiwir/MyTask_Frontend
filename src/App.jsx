@@ -3,6 +3,7 @@ import TaskHarian from './pages/Tasks/TaskHarian';
 import TaskBulanan from './pages/Tasks/TaskBulanan';
 import TaskMingguan from './pages/Tasks/TaskMingguan';
 import LoginPage from './pages/Auth/LoginPage';
+import RegisterPage from './pages/Auth/RegisterPage';
 import Layout from './layout/Layout';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         {/* ROUTE LOGIN */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* ROUTE MAIN CONTENT */}
         <Route path="/dashboard" element={<Layout />}>

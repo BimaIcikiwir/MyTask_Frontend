@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login, setToken } from "../../api/api"; // 🆕 import fungsi login & setToken dari api.js
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Banner sukses kalau baru saja mendaftar lewat RegisterPage
+  const justRegistered = location.state?.registered;
 
   // 🆕 State untuk input form (sebelumnya pakai defaultValue statis, sekarang dikontrol via state)
   const [email, setEmail] = useState("");
@@ -60,9 +63,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
+    <div className="grid min-h-dvh grid-cols-1 lg:grid-cols-2">
       {/* Panel kiri: brand */}
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-slate-900 px-12 py-10 lg:flex">
+      <div className="relative isolate hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900 px-12 py-10 lg:flex">
+        {/* Hiasan warna di belakang konten */}
+        <div className="pointer-events-none absolute -right-24 -top-24 -z-10 h-80 w-80 rounded-full bg-amber-500/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-28 -left-20 -z-10 h-80 w-80 rounded-full bg-rose-500/20 blur-3xl" />
+
         <div className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500">
             <svg
@@ -137,8 +144,12 @@ export default function LoginPage() {
       </div>
 
       {/* Panel kanan: form login */}
-      <div className="flex items-center justify-center bg-stone-50 px-6 py-12">
-        <div className="w-full max-w-sm">
+      <div className="relative isolate flex items-center justify-center overflow-hidden bg-gradient-to-br from-amber-100 via-orange-50 to-rose-100 px-4 py-10 sm:px-6">
+        {/* Hiasan warna di belakang kartu */}
+        <div className="pointer-events-none absolute -left-16 -top-16 -z-10 h-64 w-64 rounded-full bg-amber-300/40 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -right-16 -z-10 h-72 w-72 rounded-full bg-rose-300/40 blur-3xl" />
+
+        <div className="w-full max-w-sm rounded-3xl bg-white/80 p-6 shadow-xl shadow-amber-900/10 ring-1 ring-white backdrop-blur sm:p-8">
           {/* Logo untuk mobile, panel kiri disembunyikan di layar kecil */}
           <div className="mb-8 flex items-center gap-2.5 lg:hidden">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500">
@@ -165,6 +176,12 @@ export default function LoginPage() {
           <p className="mt-1.5 text-sm text-slate-500">
             Lanjutkan mengatur task harian, mingguan, dan bulananmu.
           </p>
+
+          {justRegistered && !error && (
+            <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700">
+              Akun berhasil dibuat. Silakan masuk.
+            </div>
+          )}
 
           {/* 🆕 Banner error, muncul kalau login gagal */}
           {error && (
@@ -239,12 +256,12 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-slate-500">
             Belum punya akun?{" "}
-            <a
-              href="#"
+            <Link
+              to="/register"
               className="font-medium text-amber-600 hover:text-amber-700"
             >
               Daftar sekarang
-            </a>
+            </Link>
           </p>
         </div>
       </div>
