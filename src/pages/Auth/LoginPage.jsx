@@ -188,7 +188,7 @@ export default function LoginPage() {
                 value={email} // 🆕 sebelumnya defaultValue="dimas@mytask.app", sekarang controlled input
                 onChange={(e) => setEmail(e.target.value)} // 🆕
                 required // 🆕
-                className="w-full rounded-lg border border-stone-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full rounded-lg border border-stone-300 bg-white px-3.5 py-2.5 text-base text-slate-800 sm:text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
 
@@ -214,7 +214,7 @@ export default function LoginPage() {
                 value={password} // 🆕 sebelumnya defaultValue="••••••••", sekarang controlled input
                 onChange={(e) => setPassword(e.target.value)} // 🆕
                 required // 🆕
-                className="w-full rounded-lg border border-stone-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full rounded-lg border border-stone-300 bg-white px-3.5 py-2.5 text-base text-slate-800 sm:text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
 

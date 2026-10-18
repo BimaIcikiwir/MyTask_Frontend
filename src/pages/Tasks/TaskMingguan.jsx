@@ -216,11 +216,11 @@ function TaskModal({
   };
 
   const inputClass =
-    "w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500";
+    "w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 sm:text-sm";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+      <div className="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6">
         <h2 className="mb-4 text-lg font-semibold text-slate-800">
           {task ? "Edit Task" : "Tambah Task"}
         </h2>
@@ -551,9 +551,9 @@ export default function TaskMingguan() {
   let rowNumber = 0;
 
   return (
-    <div className="px-8 py-6">
+    <div className="px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
       {/* Baris atas */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-3.5 py-1.5 text-sm font-medium text-white">
             Tipe: Mingguan
@@ -567,7 +567,7 @@ export default function TaskMingguan() {
               id="groupBy"
               value={groupBy}
               onChange={(e) => setGroupBy(e.target.value)}
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-base font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 sm:text-sm"
             >
               <option value="harian">Hari</option>
               <option value="mingguan">Minggu</option>
@@ -579,25 +579,149 @@ export default function TaskMingguan() {
         <button
           type="button"
           onClick={() => setModal({ open: true, task: null })}
-          className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-700"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-700 sm:w-auto"
         >
           <PlusIcon />
           Tambah Task
         </button>
       </div>
 
-      {/* Tabel */}
-      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+            {/* Daftar task versi mobile & tablet: kartu (tabel tampil mulai layar lg) */}
+      <div className="lg:hidden">
+        {(loading || error || groups.length === 0) && (
+          <div
+            className={`rounded-2xl border border-stone-200 bg-white px-6 py-10 text-center text-sm ${
+              !loading && error ? "text-rose-500" : "text-slate-400"
+            }`}
+          >
+            {loading
+              ? "Memuat data..."
+              : error
+                ? error
+                : "Belum ada task mingguan."}
+          </div>
+        )}
+
+        {!loading &&
+          !error &&
+          groups.map((group) => (
+            <section key={group.label} className="mb-5 last:mb-0">
+              <div className="mb-2.5 flex items-center gap-2 px-1">
+                <span className="h-3.5 w-1 rounded-full bg-amber-500" />
+                <span className="text-sm font-semibold text-slate-700">
+                  {group.label}
+                </span>
+                <span className="text-xs text-slate-400">
+                  ({group.items.length} task)
+                </span>
+              </div>
+
+              <ul className="grid gap-2.5 md:grid-cols-2">
+                {group.items.map((task) => {
+                  const due = parseDate(task.dueDateRaw);
+                  return (
+                    <li
+                      key={task.id}
+                      className="flex items-start gap-3 rounded-xl border border-stone-200 bg-white p-4"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleTaskDone(task)}
+                        aria-pressed={task.done}
+                        aria-label={
+                          task.done ? "Tandai belum selesai" : "Tandai selesai"
+                        }
+                        className={`mt-0.5 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${
+                          task.done
+                            ? "border-emerald-500 bg-emerald-500 text-white"
+                            : "border-stone-300 bg-white hover:border-emerald-400"
+                        }`}
+                      >
+                        {task.done && (
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            className="h-3.5 w-3.5"
+                          >
+                            <path
+                              d="M5 12.5l4.5 4.5L19 7"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </button>
+
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className={`break-words text-sm font-medium ${task.done ? "text-slate-400 line-through" : "text-slate-800"}`}
+                        >
+                          {task.nama}
+                        </p>
+                        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-xs font-medium ${urgencyStyle[task.urgency] ?? ""}`}
+                          >
+                            {URGENCY_OPTIONS.find((u) => u.value === task.urgency)
+                              ?.label ?? task.urgency}
+                          </span>
+                          <span className="text-xs text-slate-500">
+                            {task.category}
+                          </span>
+                          {due && (
+                            <span className="text-xs text-slate-400">
+                              ·{" "}
+                              {fmt(due, {
+                                weekday: "short",
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="-mr-1.5 -mt-1.5 flex shrink-0 items-center">
+                        <button
+                          type="button"
+                          aria-label="Edit task"
+                          onClick={() => setModal({ open: true, task })}
+                          className="rounded-lg p-2.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                        >
+                          <PencilIcon />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Hapus task"
+                          onClick={() => setDeleteTarget(task)}
+                          className="rounded-lg p-2.5 text-rose-500 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                        >
+                          <TrashIcon />
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+      </div>
+
+      {/* Tabel: hanya tampil di layar lg ke atas */}
+      <div className="hidden overflow-x-auto rounded-2xl border border-stone-200 bg-white lg:block">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-stone-200 bg-stone-50 text-slate-500">
-              <th className="px-6 py-3 font-medium">No</th>
-              <th className="px-6 py-3 font-medium">Nama task</th>
-              <th className="px-6 py-3 font-medium">Urgensi</th>
-              <th className="px-6 py-3 font-medium">Kategori</th>
-              <th className="px-6 py-3 font-medium">Tenggat</th>
-              <th className="px-6 py-3 font-medium">Selesai</th>
-              <th className="px-6 py-3 font-medium">Aksi</th>
+              <th className="hidden px-4 py-3 font-medium xl:table-cell xl:px-6">No</th>
+              <th className="px-4 py-3 font-medium xl:px-6">Nama task</th>
+              <th className="px-4 py-3 font-medium xl:px-6">Urgensi</th>
+              <th className="px-4 py-3 font-medium xl:px-6">Kategori</th>
+              <th className="px-4 py-3 font-medium xl:px-6">Tenggat</th>
+              <th className="px-4 py-3 font-medium xl:px-6">Selesai</th>
+              <th className="px-4 py-3 font-medium xl:px-6">Aksi</th>
             </tr>
           </thead>
 
@@ -640,7 +764,7 @@ export default function TaskMingguan() {
               groups.map((group) => (
                 <React.Fragment key={group.label}>
                   <tr className="bg-stone-50/70">
-                    <td colSpan={7} className="px-6 py-2.5">
+                    <td colSpan={7} className="px-4 py-2.5 xl:px-6">
                       <div className="flex items-center gap-2">
                         <span className="h-3.5 w-1 rounded-full bg-amber-500" />
                         <span className="text-sm font-semibold text-slate-700">
@@ -661,15 +785,15 @@ export default function TaskMingguan() {
                         key={task.id}
                         className="border-b border-stone-100 last:border-0 hover:bg-stone-50/60"
                       >
-                        <td className="px-6 py-3.5 text-slate-500">
+                        <td className="hidden px-4 py-3.5 text-slate-500 xl:table-cell xl:px-6">
                           {rowNumber}
                         </td>
                         <td
-                          className={`px-6 py-3.5 font-medium ${task.done ? "text-slate-400 line-through" : "text-slate-800"}`}
+                          className={`px-4 py-3.5 xl:px-6 font-medium ${task.done ? "text-slate-400 line-through" : "text-slate-800"}`}
                         >
                           {task.nama}
                         </td>
-                        <td className="px-6 py-3.5">
+                        <td className="px-4 py-3.5 xl:px-6">
                           <span
                             className={`rounded-full px-2.5 py-1 text-xs font-medium ${urgencyStyle[task.urgency] ?? ""}`}
                           >
@@ -678,10 +802,10 @@ export default function TaskMingguan() {
                             )?.label ?? task.urgency}
                           </span>
                         </td>
-                        <td className="px-6 py-3.5 text-slate-600">
+                        <td className="px-4 py-3.5 xl:px-6 text-slate-600">
                           {task.category}
                         </td>
-                        <td className="px-6 py-3.5 text-slate-600">
+                        <td className="whitespace-nowrap px-4 py-3.5 text-slate-600 xl:px-6">
                           {due
                             ? fmt(due, {
                                 day: "numeric",
@@ -690,12 +814,12 @@ export default function TaskMingguan() {
                               })
                             : "-"}
                           {due && (
-                            <span className="ml-1 text-xs text-slate-400">
+                            <span className="ml-1 hidden text-xs text-slate-400 xl:inline">
                               ({fmt(due, { weekday: "long" })})
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-3.5">
+                        <td className="px-4 py-3.5 xl:px-6">
                           <button
                             type="button"
                             onClick={() => handleTaskDone(task)}
@@ -728,7 +852,7 @@ export default function TaskMingguan() {
                             )}
                           </button>
                         </td>
-                        <td className="px-6 py-3.5">
+                        <td className="px-4 py-3.5 xl:px-6">
                           <div className="flex items-center gap-1.5">
                             <button
                               type="button"

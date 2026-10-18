@@ -62,12 +62,13 @@ const navItems = [
   },
 ];
 
-function Sidebar() {
+function Sidebar({ onNavigate, onClose }) {
   return (
-    <aside className="flex h-full flex-col justify-between bg-slate-900 px-6 py-8">
+    <aside className="flex h-full w-64 flex-col justify-between overflow-y-auto bg-slate-900 px-5 py-6 lg:px-6 lg:py-8">
       <div>
         {/* Logo */}
-        <div className="mb-10 flex items-center gap-2.5">
+        <div className="mb-8 flex items-center justify-between lg:mb-10">
+          <div className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500">
             <svg
               viewBox="0 0 24 24"
@@ -89,6 +90,25 @@ function Sidebar() {
             </p>
             <p className="mt-1 text-xs text-slate-400">Catatan tugasmu</p>
           </div>
+          </div>
+
+          {/* Tombol tutup drawer: hanya muncul di mobile/tablet */}
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Tutup menu"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/5 hover:text-white lg:hidden"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="h-5 w-5"
+            >
+              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
 
         {/* Navigasi tipe task */}
@@ -97,6 +117,7 @@ function Sidebar() {
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={onNavigate} // tutup drawer setelah pilih menu (mobile)
               className={({ isActive }) =>
                 `group flex items-center gap-3 rounded-xl border-l-2 px-3.5 py-3 transition-colors ${
                   isActive
